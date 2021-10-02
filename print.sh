@@ -26,10 +26,6 @@ function pshConfig {
   if [ -n ${printsh_secondary_character+x} ] ; then
     psh_secondary_character=${printsh_secondary_character}
   fi
-
-  pshDebugVar "psh_line_width"
-  pshDebugVar "psh_primary_character"
-  pshDebugVar "psh_secondary_character"
 }
 
 function pshLoop {
@@ -110,7 +106,8 @@ function pshTextLeft {
   
   # Add the space for the left margin
   local space_left_length=1
-  local space_right_length=$(( ${line_width} - ${text_length} ))
+  # Add the space for the right margin
+  local space_right_length=$(( ${line_width} - ${text_length} + 1 ))
 
   pshPrimaryCharacter 1
   pshSpaceCharacter $space_left_length
@@ -137,9 +134,6 @@ function pshTextCenter {
   # Add the missing space if the total number of characters is not equal to the line width
   space_right_length=$(( $space_right_length + $line_width + 2 - $text_length - $space_left_length - $space_right_length ))
 
-  pshDebugVar "text_length"
-  pshDebugVar "space_right_length"
-
   pshPrimaryCharacter 1
   pshSpaceCharacter $space_left_length
   echo -n "${input}"
@@ -158,7 +152,8 @@ function pshTextRight {
   # Remove the console color characters from the text
   local text_length=$(( $( echo "${input}" | sed "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | wc -c ) - 1 ))
 
-  local space_left_length=$(( ${line_width} - ${text_length} ))
+  # Add the space for the left margin
+  local space_left_length=$(( ${line_width} - ${text_length} + 1 ))
   # Add the space for the right margin
   local space_right_length=1
 
