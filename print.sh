@@ -165,6 +165,39 @@ function pshTextRight {
   pshNewLine
 }
 
+function pshStatus {
+
+  local key=$1
+  local value=$2
+  local type=$3
+  local indent=$4
+
+  # Exclude the left (* ) and right ( *) margins from the line width
+  local line_width=$(( ${psh_line_width} - 4 ))
+ 
+  # Remove the console color characters from the text
+  local key_length=$(( $( echo "${key}" | sed "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | wc -c ) - 1 ))
+  local value_length=$(( $( echo "${value}" | sed "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | wc -c ) - 1 ))
+  
+  # Add the space for the left margin
+  local space_left_length=$(( 1 + $indent * 2 ))
+  # Add the space for the right margin
+  local space_right_length=1
+
+  local middle_separator_length=$(( $line_width - $key_length - $value_length - 4 - $indent * 2 ))
+
+  pshPrimaryCharacter 1
+  pshSpaceCharacter $space_left_length
+  echo -n "${key}"
+  pshSpaceCharacter 1
+  pshSecondaryCharacter $middle_separator_length
+  pshSpaceCharacter 1
+  echo -n "[${value}]"
+  pshSpaceCharacter $space_right_length
+  pshPrimaryCharacter 1
+  pshNewLine
+}
+
 function pshDebugVar {
 
   local variable=$1
