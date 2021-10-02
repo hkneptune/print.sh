@@ -84,6 +84,92 @@ function pshNewLine {
   echo -e ""
 }
 
+function pshText {
+
+  local input=$1
+  local alignment=$2
+
+  if [[ ${alignment} == c* ]] ; then
+    pshTextCenter "${input}"
+  elif [[ ${alignment} == r* ]] ; then
+    pshTextRight "${input}"
+  else
+    pshTextLeft "${input}"
+  fi
+}
+
+function pshTextLeft {
+
+  local input=$1
+
+  # Exclude the left (* ) and right ( *) margins from the line width
+  local line_width=$(( ${psh_line_width} - 4 ))
+ 
+  # Remove the console color characters from the text
+  local text_length=$(( $( echo "${input}" | sed "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | wc -c ) - 1 ))
+  
+  # Add the space for the left margin
+  local space_left_length=1
+  local space_right_length=$(( ${line_width} - ${text_length} ))
+
+  pshPrimaryCharacter 1
+  pshSpaceCharacter $space_left_length
+  echo -n "${input}"
+  pshSpaceCharacter $space_right_length
+  pshPrimaryCharacter 1
+  pshNewLine
+}
+
+function pshTextCenter {
+
+  local input=$1
+
+  # Exclude the left (* ) and right ( *) margins from the line width
+  local line_width=$(( ${psh_line_width} - 4 ))
+
+  # Remove the console color characters from the text
+  local text_length=$(( $( echo "${input}" | sed "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | wc -c ) - 1 ))
+  
+  # Add the space for the left margin
+  local space_left_length=$(( ( ${line_width} - ${text_length} ) / 2 + 1 ))
+  # Add the space for the right margin
+  local space_right_length=$(( ( ${line_width} - ${text_length} ) / 2 + 1 ))
+  # Add the missing space if the total number of characters is not equal to the line width
+  space_right_length=$(( $space_right_length + $line_width + 2 - $text_length - $space_left_length - $space_right_length ))
+
+  pshDebugVar "text_length"
+  pshDebugVar "space_right_length"
+
+  pshPrimaryCharacter 1
+  pshSpaceCharacter $space_left_length
+  echo -n "${input}"
+  pshSpaceCharacter $space_right_length
+  pshPrimaryCharacter 1
+  pshNewLine
+}
+
+function pshTextRight {
+
+  local input=$1
+
+  # Exclude the left (* ) and right ( *) margins from the line width
+  local line_width=$(( ${psh_line_width} - 4 ))
+
+  # Remove the console color characters from the text
+  local text_length=$(( $( echo "${input}" | sed "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | wc -c ) - 1 ))
+
+  local space_left_length=$(( ${line_width} - ${text_length} ))
+  # Add the space for the right margin
+  local space_right_length=1
+
+  pshPrimaryCharacter 1
+  pshSpaceCharacter $space_left_length
+  echo -n "${input}"
+  pshSpaceCharacter $space_right_length
+  pshPrimaryCharacter 1
+  pshNewLine
+}
+
 function pshDebugVar {
 
   local variable=$1
