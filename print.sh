@@ -72,6 +72,13 @@ function pshSecondaryCharacter {
   pshLoop "${psh_secondary_character}" "${length}"
 }
 
+function pshSpaceCharacter {
+
+  local length=$1
+
+  pshLoop " " "${length}"
+}
+
 function pshNewLine {
 
   echo -e ""
